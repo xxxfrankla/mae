@@ -1,0 +1,10 @@
+{
+  "summary": {
+    "num_samples": 50,
+    "mean_loss": 1.0320087265968323,
+    "std_loss": 0.1000123828440902,
+    "min_loss": 0.8529601097106934,
+    "max_loss": 1.3088821172714233
+  },
+  "best_sample": {
+    "index": 

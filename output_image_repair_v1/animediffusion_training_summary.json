@@ -1,0 +1,16 @@
+{
+  "dataset": "AnimeDiffusion",
+  "dataset_size": 1000,
+  "original_resolution": "1920x1080",
+  "target_resolution": "224x224",
+  "resize_strategy": "smart_crop",
+  "model": "mae_vit_base_patch16",
+  "epochs": 20,
+  "batch_size": 4,
+  "effective_batch_size": 64,
+  "learning_rate": 1.25e-05,
+  "mask_ratio": 0.25,
+  "best_loss": 0.7266295057535171,
+  "training_time": "1:10:29",
+  "device": "mps"
+}

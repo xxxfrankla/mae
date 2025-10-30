@@ -1,0 +1,13 @@
+{
+  "dataset": "anime-captions",
+  "total_samples": 1000,
+  "model": "mae_vit_base_patch16",
+  "epochs": 3,
+  "batch_size": 4,
+  "effective_batch_size": 32,
+  "learning_rate": 1.875e-05,
+  "mask_ratio": 0.75,
+  "best_loss": 1.073948367834091,
+  "training_time": "0:09:05",
+  "device": "mps"
+}

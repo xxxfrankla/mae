@@ -1,0 +1,146 @@
+[
+  {
+    "image_id": 1,
+    "original_shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "mask_results": [
+      {
+        "mask_ratio": 0.5,
+        "loss": 2.3167054653167725,
+        "actual_mask_ratio": 0.5,
+        "mean_error": 0.28701508045196533,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_50percent/masked_image_1.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_50percent/reconstructed_image_1.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_50percent/error_map_1.png"
+        }
+      },
+      {
+        "mask_ratio": 0.75,
+        "loss": 2.3053274154663086,
+        "actual_mask_ratio": 0.75,
+        "mean_error": 0.2862030863761902,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_75percent/masked_image_1.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_75percent/reconstructed_image_1.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_75percent/error_map_1.png"
+        }
+      },
+      {
+        "mask_ratio": 0.9,
+        "loss": 2.2921314239501953,
+        "actual_mask_ratio": 0.9030612111091614,
+        "mean_error": 0.2857055068016052,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_90percent/masked_image_1.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_90percent/reconstructed_image_1.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_90percent/error_map_1.png"
+        }
+      }
+    ],
+    "original_file": "mae_reconstruction_20251029_214850/original_image_1.png"
+  },
+  {
+    "image_id": 2,
+    "original_shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "mask_results": [
+      {
+        "mask_ratio": 0.5,
+        "loss": 2.166520833969116,
+        "actual_mask_ratio": 0.5,
+        "mean_error": 0.2714284658432007,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_50percent/masked_image_2.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_50percent/reconstructed_image_2.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_50percent/error_map_2.png"
+        }
+      },
+      {
+        "mask_ratio": 0.75,
+        "loss": 2.1870059967041016,
+        "actual_mask_ratio": 0.75,
+        "mean_error": 0.2708207070827484,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_75percent/masked_image_2.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_75percent/reconstructed_image_2.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_75percent/error_map_2.png"
+        }
+      },
+      {
+        "mask_ratio": 0.9,
+        "loss": 2.1567866802215576,
+        "actual_mask_ratio": 0.9030612111091614,
+        "mean_error": 0.27073243260383606,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_90percent/masked_image_2.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_90percent/reconstructed_image_2.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_90percent/error_map_2.png"
+        }
+      }
+    ],
+    "original_file": "mae_reconstruction_20251029_214850/original_image_2.png"
+  },
+  {
+    "image_id": 3,
+    "original_shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "mask_results": [
+      {
+        "mask_ratio": 0.5,
+        "loss": 2.0815823078155518,
+        "actual_mask_ratio": 0.5,
+        "mean_error": 0.2645317614078522,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_50percent/masked_image_3.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_50percent/reconstructed_image_3.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_50percent/error_map_3.png"
+        }
+      },
+      {
+        "mask_ratio": 0.75,
+        "loss": 2.0863895416259766,
+        "actual_mask_ratio": 0.75,
+        "mean_error": 0.2638084888458252,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_75percent/masked_image_3.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_75percent/reconstructed_image_3.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_75percent/error_map_3.png"
+        }
+      },
+      {
+        "mask_ratio": 0.9,
+        "loss": 2.1068434715270996,
+        "actual_mask_ratio": 0.9030612111091614,
+        "mean_error": 0.26385241746902466,
+        "max_error": 1.0,
+        "files": {
+          "masked": "mae_reconstruction_20251029_214850/mask_90percent/masked_image_3.png",
+          "reconstructed": "mae_reconstruction_20251029_214850/mask_90percent/reconstructed_image_3.png",
+          "error_map": "mae_reconstruction_20251029_214850/mask_90percent/error_map_3.png"
+        }
+      }
+    ],
+    "original_file": "mae_reconstruction_20251029_214850/original_image_3.png"
+  }
+]
