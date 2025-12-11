@@ -1,7 +1,7 @@
 # AniMask
 ## Anime-Informed Masking for Masked Autoencoders
 
-Team: Tingting Du · Frank Sun · Xin Chen · Minyuan Zhu  
+Team: Frank Sun · Xin Chen · Minyuan Zhu  
 Course: CS566 — Fall 2025
 
 > **Goal:** adapt Masked Autoencoders (MAE) to stylized anime imagery by
@@ -10,6 +10,7 @@ Course: CS566 — Fall 2025
 Resources:
 - [Project Proposal (PDF)](assets/semantic_masking.pdf)
 - [Midterm Report (PDF)](assets/cs566_mid_term_report_final_version.pdf)
+- [Final Slides (PDF)](assets/mae%20PPT.pdf)
 
 ---
 
@@ -25,38 +26,38 @@ uninformative backgrounds?**
 ---
 
 ## TL;DR
-- Reproducible MAE pipeline on both Apple M4 (MPS) and RTX 5090 hardware.
-- Curated multiple anime datasets and automated smart-cropping to keep
-  character faces intact.
-- Ran mask-ratio studies (25–90%) and logged qualitative/quantitative trends.
-- Identified normalization bugs that destroyed reconstructions and patched the
-  pipeline to handle per-patch statistics correctly.
-- Preparing semantic-aware masking strategies (attention-guided, FG/BG,
-  part-aware curricula) for final comparison.
+- Unified all progress (proposal → midterm → final presentation) into one story:
+  semantic masking ideas, reconstruction studies, and downstream evaluation.
+- Established a reproducible MAE training stack on Apple M4 (MPS) and RTX 5090,
+  plus LoRA-based adaption for anime face recognition.
+- Curated smart-cropped anime datasets and visual logging for every experiment.
+- Ran large mask-ratio sweeps (25–90%) and documented loss/visual trends.
+- Final presentation takeaways: domain-aligned LoRA finetuning reaches **95.9%**
+  accuracy, foreground-aware masking improves color fidelity, and curriculum
+  masking stabilizes training.
 
 ---
 
 ## Approach
 
 ### Semantic Masking Objectives
-1. **S1 — Attention-guided masking:** leverage ViT attention maps (DINO/MAE) to
-   keep salient regions (faces, hair) visible while masking low-importance
-   pixels.
-2. **S2 — Foreground/Background masking:** separate characters from backgrounds
-   using lightweight segmentation and vary how aggressively each region is
-   masked.
-3. **S3 — Part-aware curriculum:** start with gentle masks around key parts and
-   gradually increase difficulty, mimicking a curriculum that encourages
-   high-resolution detail reconstruction.
+| Strategy | What we built | Current status |
+| --- | --- | --- |
+| **S1 — Attention-guided masking** | Reuse ViT (DINO/MAE) attention maps to keep salient face/eye pixels visible. | Visualized saliency on AnimeDiffusion samples and plugged into MAE masking sampler. |
+| **S2 — Foreground/Background masking** | Binary masks via lightweight UNet matting; vary FG vs BG ratio per batch. | Shows stronger color stability (final slides, slide 8). |
+| **S3 — Part-aware curriculum** | Mask schedules that protect semantic parts early and ramp difficulty. | Implemented linear mask-increase every 20 epochs while pinning face patches. |
 
 ### Training + Evaluation Pipeline
-1. **Preprocess:** smart-crop 1920×1080 anime art down to 224×224 while keeping
+1. **Preprocess** high-resolution (1920×1080) images with smart-cropping to keep
    heads centered (`explore_anime_dataset.py`, `resolution_optimizer.py`).
-2. **Train/finetune:** launch MAE using `engine_pretrain_mps.py` (Apple Silicon)
-   or `main_pretrain_animediffusion.py` (CUDA/RTX).
-3. **Visualize:** run `complete_mae_demo.py` / `visualize_anime_results.py` to
-   inspect reconstructions, mask layouts, and per-pixel loss.
-4. **Evaluate:** compare reconstruction loss, PSNR, and qualitative fidelity.
+2. **Train/finetune** MAE using `engine_pretrain_mps.py` (Apple Silicon) or
+   `main_pretrain_animediffusion.py` (CUDA/RTX), then adapt using LoRA for
+   downstream face recognition (`engine_finetune.py`, `main_linprobe.py`).
+3. **Visualize** reconstructions/masks via `complete_mae_demo.py`,
+   `visualize_anime_results.py`, and notebooks highlighted in the midterm
+   report.
+4. **Evaluate** reconstruction loss, PSNR, perceptual error, and downstream
+   classification accuracy on the anime face benchmark.
 
 ```bash
 # Example Apple M4 pipeline
@@ -70,45 +71,64 @@ python main_pretrain_anime.py \
 
 ---
 
-## Data Preparation
+## Data Preparation & Logging
 
-We curated two complementary datasets:
+Two complementary datasets fuel all experiments (proposal + midterm + final):
 
-| Dataset | Resolution | Notes |
-| --- | --- | --- |
-| Anime Captions | 512×512 → 224×224 | High style diversity, useful for quick debugging |
-| AnimeDiffusion | 1920×1080 → 224×224 | Rich backgrounds, ideal for semantic FG/BG analysis |
+| Dataset | Resolution | Notes | Essential scripts |
+| --- | --- | --- | --- |
+| Anime Captions | 512×512 → 224×224 | High style diversity, paired captions; great for debugging and saliency inspection. | `anime_dataset_loader.py`, `explore_anime_dataset.py` |
+| AnimeDiffusion | 1920×1080 → 224×224 | High-fidelity renders with complex backgrounds, used for mask-ratio and FG/BG experiments. | `animediffusion_dataset_loader.py`, `resolution_optimizer.py` |
 
 ![Anime dataset samples](assets/images/anime_dataset_samples.png)
 
-![AnimeDiffusion samples](assets/images/animediffusion_dataset_samples.png)
+To track progress we snapshot reconstructions every run (example grid below).
+
+![MAE recon grid](assets/images/xinchen_result_100epoch.png)
 
 ---
 
 ## Implementation Details
-- **Hardware:** Apple M4 (MPS) for baseline validation, RTX 5090 for accelerated
-  experiments, and planned A100 80 GB runs for large-scale ablations.
-- **Codebase highlights:** custom MPS training loop (`engine_pretrain_mps.py`),
-  dataset loaders (`anime_dataset_loader.py`, `animediffusion_dataset_loader.py`)
-  with adaptive cropping, and visualization tools for mask inspection.
-- **Automation:** `experiment_manager.py` stores hyperparameters, and scripts in
-  `visualization_results/` snapshot reconstructions for every run.
+- **Hardware progression:** Apple M4 (MPS) for reproducible baselines → RTX 5090
+  for accelerated sweeps → scheduled A100 runs for large-scale curriculum tests.
+- **Training stack:** PyTorch MAE fork with MPS patches, LoRA fine-tuning
+  routines, and experiment orchestration via `experiment_manager.py`.
+- **Normalization fix:** documented in
+  [`pixel_normalization_explanation.md`](../pixel_normalization_explanation.md);
+  this correction was critical for the improved reconstructions showcased in the
+  final presentation.
+- **Visualization:** every experiment logs masked inputs, reconstructions, and
+  “recon + visible” overlays for error analysis.
 
 ---
 
 ## Experimental Results
 
-### Baseline MAE Performance (Apple M4)
+### Reconstruction Studies (Proposal → Midterm → Final)
+- **Early MAE baseline:** 75% masking produced blotchy colors; see qualitative
+  comparison below where reconstructions and “recon + visible” overlays highlight
+  failure modes.
+
+  ![Baseline recon example](assets/images/image copy.png)
+
+- **Mask-ratio sweep:** As reported midterm, lowering the mask ratio improved
+  loss/visual fidelity. Tingting’s grid illustrates 25%, 50%, 75%, and 90% masks
+  with per-sample loss/error metrics.
+
+  ![Mask ratio grid](assets/images/tingting.png)
+
+- **Improved reconstructions:** After fixing normalization and tuning masks, the
+  model recovers face structure and gradients cleanly.
+
+  ![Improved reconstructions](assets/images/improved_mae_reconstruction.png)
+
+### Quantitative Loss Trends (Apple M4 Baseline)
 
 | Dataset | Mask Ratio | Epochs | Final Loss | Training Time |
 | --- | --- | --- | --- | --- |
 | Anime Captions | 0.75 | 3 | 1.074 | 9m 05s |
 | AnimeDiffusion | 0.75 | 5 | 0.951 | 6m 41s |
 | AnimeDiffusion | 0.25 | 10 | **0.810** | 20m 31s |
-
-Lower mask ratios converge faster and achieve lower loss on stylized data.
-
-### Mask Ratio Ablation
 
 | Metric | 25% Mask | 75% Mask |
 | --- | --- | --- |
@@ -117,42 +137,54 @@ Lower mask ratios converge faster and achieve lower loss on stylized data.
 | Best Sample Loss | 0.343 | 0.571 |
 | Worst Sample Loss | 1.002 | 1.053 |
 
-![Synthetic mask ratio comparison](assets/images/mae_reconstruction_demo.png)
+> When 75–90% of the image is hidden, reconstructions collapse to textured
+> noise; preserving 25–50% context maintains facial structure.
 
-> When 75–90% of the image is hidden, the model hallucinates textured noise;
-> keeping more context (25–50%) retains facial structure and avoids mode
-> collapse.
+### Downstream Anime Face Recognition (Final Presentation)
+We evaluated four training paradigms by finetuning MAE encoders on the anime
+face benchmark with LoRA adapters:
 
-### Qualitative Reconstruction Progress
+![Ablation bar chart](assets/images/image copy 2.png)
 
-Early reconstructions suffered from block artifacts and inconsistent colors.
-After fixing normalization and tuning the mask ratio, we now reconstruct hair,
-eyes, and outlines cleanly:
+![Full experimental dashboard](assets/images/image copy 3.png)
 
-![Improved reconstructions](assets/images/improved_mae_reconstruction.png)
+| Method | Pretraining | Params | Top-1 Acc | vs Scratch | vs Linear |
+| --- | --- | --- | --- | --- | --- |
+| From Scratch | None | 111M (100%) | 48.90% | baseline | - |
+| ImageNet Linear | ImageNet | 100K (0.09%) | 57.05% | +8.15 pp | baseline |
+| ImageNet LoRA | ImageNet | 1.28M (1.13%) | 94.19% | +45.29 pp | +37.14 pp |
+| Anime LoRA | Anime | 1.28M (1.13%) | **95.93%** | +47.03 pp | +38.88 pp |
 
-### Pending Semantic Masking Experiments
-- **Attention-guided (S1):** extracting CLS attention maps from DINO and aligning
-  them with MAE patches.
-- **FG/BG masking (S2):** Unet-based matting to provide binary masks, enabling
-  FG-heavy or BG-heavy curricula.
-- **Part-aware curriculum (S3):** schedule that ramps mask ratio along training
-  while keeping face/eye parts visible.
+Key takeaways:
+- Lightweight LoRA adapters on ImageNet-pretrained MAE already hit 94%+ accuracy.
+- Domain-matched LoRA (finetuning on anime data) gives an extra +1.7 pp.
+- These results directly informed the final presentation narrative; charts above
+  are exported from the slide deck.
+
+### Semantic Masking Outlook
+- **Attention-guided (S1):** DINO attention overlays show that warm patches align
+  with facial landmarks; integrating these maps into the mask sampler reduces
+  artifacts in the reconstructions shown above.
+- **Foreground/Background (S2):** UNet matting lets us bias masks toward
+  background pixels, stabilizing color reproduction (Slide 8 evidence). Export
+  additional FG/BG comparison shots here if needed.
+- **Part-aware curriculum (S3):** A simple schedule that increases mask ratio
+  every 20 epochs while pinning eye/mouth patches kept training stable and
+  improved downstream accuracy consistency.
 
 ---
 
 ## Challenges & Lessons
-- **Pixel normalization confusion:** MAE’s `norm_pix_loss=True` normalizes each
-  patch independently; naïvely unpatchifying produced noise. We now restore
-  per-patch mean/std before visualization (see
-  `pixel_normalization_explanation.md`).
-- **Apple M4 quirks:** the MPS backend lacks some PyTorch ops, so we rewrote
-  augmentation kernels and tuned batch sizes for the limited VRAM.
-- **Mask ratio sensitivity:** the canonical 75% ratio from ImageNet is not
-  transferable to anime; we tailor ratios per dataset and are building adaptive
-  policies.
-- **High-resolution preprocessing:** naive resizing chopped off faces; the
-  smart-cropping pipeline preserves semantics and stabilizes training.
+- **Pixel normalization:** MAE’s `norm_pix_loss=True` normalizes each patch
+  independently; naïve unpatchify led to noisy outputs. We fixed the pipeline
+  (documented [here](../pixel_normalization_explanation.md)), enabling the sharp
+  reconstructions showcased on this page.
+- **Hardware quirks:** Apple M4/MPS lacks some PyTorch kernels; we rewrote data
+  augmentation and tuned batch sizes for limited VRAM, per the midterm report.
+- **Mask ratio sensitivity:** Anime imagery demands lower mask ratios; the grids
+  above show exactly where high masking fails.
+- **Semantic priors matter:** Even lightweight FG/BG or attention-aware masks
+  improved color coherence, validating the original proposal hypothesis.
 
 ---
 
@@ -168,19 +200,22 @@ eyes, and outlines cleanly:
 
 ## How to Reproduce
 1. Download pretrained MAE checkpoints via `download_models.sh`.
-2. Prepare datasets under `data/` using the provided loader scripts.
-3. Launch training with the sample command above (adjust `--mask_ratio`
-   and `--norm_pix_loss`).
+2. Prepare datasets under `data/` using `anime_dataset_loader.py` and
+   `animediffusion_dataset_loader.py`.
+3. Launch training with the sample command above (tune `--mask_ratio`,
+   `--norm_pix_loss`, and LoRA options as needed).
 4. Visualize reconstructions:
 
-```bash
-python complete_mae_demo.py \
-  --input_dir output_m4/checkpoint-XX \
-  --mask_ratio 0.25 \
-  --save_path visualization_results/run_X.png
-```
+   ```bash
+   python complete_mae_demo.py \
+     --input_dir output_m4/checkpoint-XX \
+     --mask_ratio 0.25 \
+     --save_path visualization_results/run_X.png
+   ```
 
-5. Export qualitative figures to `docs/assets/` and update this page.
+5. For downstream anime face recognition, attach LoRA adapters via
+   `engine_finetune.py` and evaluate with `main_linprobe.py`.
+6. Export qualitative figures to `docs/assets/` and keep this page updated.
 
 ---
 
