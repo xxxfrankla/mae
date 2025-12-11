@@ -41,6 +41,7 @@ uninformative backgrounds?**
 ## Approach
 
 ### Semantic Masking Objectives
+
 | Strategy | What we built | Current status |
 | --- | --- | --- |
 | **S1 — Attention-guided masking** | Reuse ViT (DINO/MAE) attention maps to keep salient face/eye pixels visible. | Visualized saliency on AnimeDiffusion samples and plugged into MAE masking sampler. |
