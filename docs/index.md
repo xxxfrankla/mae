@@ -11,6 +11,10 @@ Resources:
 - [Project Proposal (PDF)](assets/semantic_masking.pdf)
 - [Midterm Report (PDF)](assets/cs566_mid_term_report_final_version.pdf)
 - [Final Slides (PDF)](assets/mae%20PPT.pdf)
+- [Original MAE Repository](https://github.com/facebookresearch/mae)
+- [Our Forked Repository](https://github.com/xxxfrankla/mae)
+- [Our Pretrained Model](https://huggingface.co/Max13241/MAE_Anime)
+- [Our Pretrained Model 2](https://huggingface.co/JackZzZ233/MAE_Anime)
 
 ---
 
@@ -113,8 +117,7 @@ To track progress we snapshot reconstructions every run (example grid below).
   ![Baseline recon example](assets/images/image copy.png)
 
 - **Mask-ratio sweep:** As reported midterm, lowering the mask ratio improved
-  loss/visual fidelity. Tingting’s grid illustrates 25%, 50%, 75%, and 90% masks
-  with per-sample loss/error metrics.
+  loss/visual fidelity. Grid below illustrates 25%, 50%, 75%, and 90% masks with per-sample loss/error metrics.
 
   ![Mask ratio grid](assets/images/tingting.png)
 
