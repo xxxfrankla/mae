@@ -15,6 +15,7 @@ Resources:
 - [Our Forked Repository](https://github.com/xxxfrankla/mae)
 - [Our Pretrained Model](https://huggingface.co/Max13241/MAE_Anime)
 - [Our Pretrained Model 2](https://huggingface.co/JackZzZ233/MAE_Anime)
+- [Final Presentation Video](https://drive.google.com/file/d/1O86FpvW4jOhj1v7YGqGitAYZtjXtW8K2/view?usp=drive_link)
 
 ---
 
