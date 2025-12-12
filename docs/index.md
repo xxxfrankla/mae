@@ -4,7 +4,7 @@
 Team: Frank Sun · Xin Chen · Minyuan Zhu  
 Course: CS566 — Fall 2025
 
-> **Goal:** adapt Masked Autoencoders (MAE) to stylized anime imagery by
+> **Goal:** Investigate Masked Autoencoders (MAE) adaptation strategies for anime domain, from reconstruction quality to downstream face recognition.
 > injecting semantic priors into the masking policy.
 
 Resources:
@@ -30,20 +30,57 @@ uninformative backgrounds?**
 ---
 
 ## TL;DR
-- Unified all progress (proposal → midterm → final presentation) into one story:
-  semantic masking ideas, reconstruction studies, and downstream evaluation.
-- Established a reproducible MAE training stack on Apple M4 (MPS) and RTX 5090,
-  plus LoRA-based adaption for anime face recognition.
-- Curated smart-cropped anime datasets and visual logging for every experiment.
-- Ran large mask-ratio sweeps (25–90%) and documented loss/visual trends.
-- Final presentation takeaways: domain-aligned LoRA finetuning reaches **95.9%**
-  accuracy, foreground-aware masking improves color fidelity, and curriculum
-  masking stabilizes training.
+**Two-Stage Workflow:**
+
+**Stage 1 — MAE Pretraining (Reconstruction):**
+- Pretrained MAE on AnimeDiffusion dataset (57K images, 200 epochs)
+- Explored mask-ratio sweeps (25–90%) and documented loss/visual trends
+- Finding: 75% masking optimal for learning generalizable features
+
+**Stage 2 — Fine-tuning (Face Recognition):**
+- Conducted 4-way ablation on AnimeFace Character dataset (130 classes, 12K images)
+- Compared: From Scratch (48.90%) → ImageNet Linear (57.05%) → ImageNet LoRA (94.19%) → **Anime LoRA (95.93%)** 
+
+**Primary result:** 
+- Anime-pretrained LoRA achieves **95.93%** top-1 accuracy with only **1.13% trainable parameters**
+- Demonstrates effective parameter-efficient transfer learning for stylized imagery
+
+**Key insights:**
+-  Pretraining is essential (+47pp gain vs. from scratch)
+-  LoRA bridges domain gap (+37pp vs. linear probing)
+-  Domain-matched pretraining helps (+1.74pp vs. ImageNet)
+-  Established reproducible MAE training stack on Apple M4 (MPS) and RTX 5090
 
 ---
 
 ## Approach
+### Transfer Learning Pipeline (Primary Contribution)
 
+**Two-Stage Approach:**
+
+#### Stage 1: MAE Pretraining (Reconstruction Task)
+- **ImageNet MAE:** Official pretrained ViT-Base/16 from Facebook Research (1000 epochs on ImageNet-1K)
+- **Anime MAE:** Our custom pretraining on AnimeDiffusion dataset (~57K anime images, 200 epochs, 75% mask ratio)
+
+#### Stage 2: Fine-tuning for Face Recognition (Classification Task)
+
+We conducted a systematic 4-way ablation study on anime face recognition:
+
+| Method | Pretraining Source | Fine-tuning Strategy | Trainable Params | Top-1 Acc | Key Insight |
+|--------|-------------------|---------------------|------------------|-----------|-------------|
+| **1. From Scratch** | None (random init) | Train all weights | 111M (100%) | 48.90% | Insufficient data |
+| **2. ImageNet Linear** | ImageNet MAE | Freeze encoder, train head | 100K (0.09%) | 57.05% | Domain gap exists |
+| **3. ImageNet LoRA** | ImageNet MAE | LoRA adapters + head | 1.28M (1.13%) | 94.19% | LoRA bridges gap |
+| **4. Anime LoRA** | **Anime MAE** | LoRA adapters + head | 1.28M (1.13%) | **95.93%** | Domain match helps |
+
+**Dataset:** AnimeFace Character (Kaggle) — 130 classes, 12,853 images
+
+**Key Pipeline:**
+```
+Pretraining: ImageNet/AnimeDiffusion (reconstruction) 
+    ↓
+Fine-tuning: AnimeFace Character (face recognition)
+```
 ### Semantic Masking Objectives
 
 | Strategy | What we built | Current status |
